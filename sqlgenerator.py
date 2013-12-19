@@ -8,8 +8,8 @@ import csv as csv
 import numpy as np
 
 #Set variables
-schema1 = "TAS_21_BODS_CORE"
-schema2 = "TAS_21_BODS_CORE"
+schema1 = "TAS21_INFA_CORE"
+schema2 = "BCO_CORE"
 
 #Read csv file
 csv_file_object = csv.reader(open('result.csv', 'rb')) #Load in the csv file
@@ -27,17 +27,20 @@ for row in data:
 tables = list(set(tables)) #make list distinct
 tables.sort()
 
-#Function to loop through the data
-def write_sql(schema):
+#Function to write the SELECT
+def write_select(table, schema):
+    print "SELECT "
+    for column in data:
+        if(table == column[0]):
+            print column[1]+", ",
+    print "TAS_SOURCE_ID"
+    print "FROM "+schema+"."+table
+
+def write_minus(schema1, schema2):
     for table in tables:
-        print "SELECT "
-        for column in data:
-            if(table == column[0]):
-                #think of a way to preven a comma after last column!!!
-                #do something with length and filter on list??
-                print column[1]+", ",
-        print "FROM "+schema+"."+table
-        print ""
+        write_select(table, schema1)
+        print "MINUS"
+        write_select(table, schema2)
+        print ";"
 
-write_sql(schema1)
-
+write_minus(schema1, schema2)
