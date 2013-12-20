@@ -6,6 +6,7 @@ Date : 2013-12-19
 
 import csv as csv
 import numpy as np
+import os as os
 
 #Set variables
 schema1 = "TAS21_INFA_CORE"
@@ -36,6 +37,7 @@ def write_select(table, schema):
     print "TAS_SOURCE_ID"
     print "FROM "+schema+"."+table
 
+#Function to write SQL statements with MINUS
 def write_minus(schema1, schema2):
     for table in tables:
         write_select(table, schema1)
@@ -43,4 +45,31 @@ def write_minus(schema1, schema2):
         write_select(table, schema2)
         print ";"
 
-write_minus(schema1, schema2)
+#write_minus(schema1, schema2)
+
+#Function to make valid table name for FitNesse 
+#e.g. CORE_DELIVERY_BLOCK >> CoreDeliveryBlock
+table = "CORE_DELIVERY_BLOCK"
+
+#all lower case
+locase = table.lower()
+#Make first upper case
+fupper = locase[0].upper()+locase[1:]
+
+def valid_fitname(name):
+    pos = name.find("_")
+    if(pos <> -1):
+        #remove underscore
+        newstr = name[:pos] + name[pos+1:]
+        #make first letter upper case
+        upcase = newstr[:pos] + newstr[pos].upper() + newstr[pos+1:]
+        return valid_fitname(upcase)
+    else:
+        return name
+
+print valid_fitname(fupper)
+
+
+
+
+#create folder on OS:        os.makedirs(table)
