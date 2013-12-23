@@ -12,21 +12,24 @@ import os as os
 schema1 = "TAS21_INFA_CORE"
 schema2 = "BCO_CORE"
 
+#......Import data and prepare for processing......#
+
 #Read csv file
 csv_file_object = csv.reader(open('result.csv', 'rb')) #Load in the csv file
-header = csv_file_object.next() #Skip the fist line as it is a header
-data=[] #Creat a variable called 'data'
+header = csv_file_object.next() #Skip the first line as it is a header
+data=[] #Create a variable called 'data'
 for row in csv_file_object: #Skip through each row in the csv file
     data.append(row) #adding each row to the data variable
-
-#data = np.array(data) #Then convert from a list to an array
 
 #Create unique table list
 tables = []
 for row in data:
     tables.append(row[0])
 tables = list(set(tables)) #make list distinct
-tables.sort()
+tables.sort() #sort tables ascending
+
+
+#.......Functions to write the SQL statements.......#
 
 #Function to write the SELECT
 def write_select(table, schema):
@@ -47,27 +50,31 @@ def write_minus(schema1, schema2):
 
 #write_minus(schema1, schema2)
 
-#Function to make valid table name for FitNesse 
+
+#..Functions to make valid table name for FitNesse..#
+
 #e.g. CORE_DELIVERY_BLOCK >> CoreDeliveryBlock
 table = "CORE_DELIVERY_BLOCK"
 
-#all lower case
-locase = table.lower()
-#Make first upper case
-fupper = locase[0].upper()+locase[1:]
-
 def valid_fitname(name):
+    #all lower case
+    locase = name.lower()
+    #Make first upper case
+    fupper = locase[0].upper()+locase[1:]
+    return remove_underscores(fupper)
+
+def remove_underscores(name):
     pos = name.find("_")
     if(pos <> -1):
         #remove underscore
         newstr = name[:pos] + name[pos+1:]
         #make first letter upper case
         upcase = newstr[:pos] + newstr[pos].upper() + newstr[pos+1:]
-        return valid_fitname(upcase)
+        return remove_underscores(upcase)
     else:
         return name
 
-print valid_fitname(fupper)
+print valid_fitname(table)
 
 
 
